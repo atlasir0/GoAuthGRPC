@@ -1,11 +1,13 @@
 package main
 
-// 1.20.49
+// 2.05
 
 import (
 	"GoAuthGRPC/internal/app"
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"GoAuthGRPC/internal/config"
 )
@@ -26,7 +28,16 @@ func main() {
 
 	application := app.New(log, cfg.GRPC.Port, cfg.StoragePath, cfg.TokenTTL)
 
-	application.GRPCServer.MustRun()
+	go application.GRPCServer.MustRun()
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT) //TODO: почитать
+	sign := <-stop
+
+	log.Info("application stopped", slog.String("signal", sign.String()))
+	application.GRPCServer.Stop() // TODO: сделай обертку с для бд аналогично с grpc сервером так же сделать Grace for shut down
+
+	log.Info("application stopped")
 }
 
 func setupLogger(env string) *slog.Logger {

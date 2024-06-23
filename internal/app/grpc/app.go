@@ -10,22 +10,25 @@ import (
 )
 
 type App struct {
-	log        *slog.Logger
-	gRPCServer *grpc.Server
-	port       int
+	log         *slog.Logger
+	gRPCServer  *grpc.Server
+	port        int
+	authService authrpc.Auth
 }
 
 func New(
 	log *slog.Logger,
 	port int,
+	authService authrpc.Auth,
 ) *App {
 	gRPCServer := grpc.NewServer()
-	authrpc.Register(gRPCServer)
+	authrpc.Register(gRPCServer, authService)
 
 	return &App{
 		log:        log,
 		gRPCServer: gRPCServer,
 		port:       port,
+		authService: authService,
 	}
 }
 
@@ -35,12 +38,10 @@ func (a *App) MustRun() {
 	}
 }
 
-// Run runs gRPC server.
 func (a *App) Run() error {
 	const op = "grpcapp.Run"
 
-	// Создаём listener, который будет слушить TCP-сообщения, адресованные
-	// Нашему gRPC-серверу
+
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", a.port))
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
@@ -48,13 +49,13 @@ func (a *App) Run() error {
 
 	a.log.Info("grpc server started", slog.String("addr", l.Addr().String()))
 
-	// Запускаем обработчик gRPC-сообщений
 	if err := a.gRPCServer.Serve(l); err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}
 
 	return nil
 }
+
 func (a *App) Stop() {
 	const op = "grpc.Stop"
 
