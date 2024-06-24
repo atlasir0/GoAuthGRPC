@@ -1,8 +1,10 @@
 package auth
 
 import (
+	"GoAuthGRPC/internal/services/auth"
+	"GoAuthGRPC/internal/storage"
 	"context"
-	"strconv"
+	"errors"
 
 	ssov1 "github.com/atlasir0/proto/protos/gen/go/sso"
 	"google.golang.org/grpc"
@@ -30,98 +32,78 @@ type serverAPI struct {
 	auth Auth
 }
 
-func Register(gRPC *grpc.Server, auth Auth) {
-	ssov1.RegisterAuthServer(gRPC, &serverAPI{auth: auth})
+func Register(gRPCServer *grpc.Server, auth Auth) {
+	ssov1.RegisterAuthServer(gRPCServer, &serverAPI{auth: auth})
 }
-
-const (
-	emptyValue = int64(0) 
-)
 
 func (s *serverAPI) Login(
 	ctx context.Context,
-	req *ssov1.LoginRequest,
+	in *ssov1.LoginRequest,
 ) (*ssov1.LoginResponse, error) {
-	if err := validateLogin(req); err != nil {
-		return nil, err
+	if in.Email == "" {
+		return nil, status.Error(codes.InvalidArgument, "email is required")
 	}
-	appID, err := strconv.Atoi(req.GetAppId()) 
+
+	if in.Password == "" {
+		return nil, status.Error(codes.InvalidArgument, "password is required")
+	}
+
+	if in.GetAppId() == 0 {
+		return nil, status.Error(codes.InvalidArgument, "app_id is required")
+	}
+
+	token, err := s.auth.Login(ctx, in.GetEmail(), in.GetPassword(), int(in.GetAppId()))
 	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, "Invalid App ID")
+		if errors.Is(err, auth.ErrInvalidCredentials) {
+			return nil, status.Error(codes.InvalidArgument, "invalid email or password")
+		}
+
+		return nil, status.Error(codes.Internal, "failed to login")
 	}
-	token, err := s.auth.Login(ctx, req.GetEmail(), req.GetPassword(), appID)
-	if err != nil {
-		return nil, status.Error(codes.Internal, "internal server error")
-	}
-	return &ssov1.LoginResponse{
-		Token: token,
-	}, nil
+
+	return &ssov1.LoginResponse{Token: token}, nil
 }
 
 func (s *serverAPI) Register(
 	ctx context.Context,
-	req *ssov1.RegisterRequest,
+	in *ssov1.RegisterRequest,
 ) (*ssov1.RegisterResponse, error) {
-	if err := validateRegister(req); err != nil {
-		return nil, err
+	if in.Email == "" {
+		return nil, status.Error(codes.InvalidArgument, "email is required")
 	}
 
-	userID, err := s.auth.RegisterNewUser(ctx, req.GetEmail(), req.GetPassword())
-	if err != nil {
-		return nil, status.Error(codes.Internal, "internal server error")
+	if in.Password == "" {
+		return nil, status.Error(codes.InvalidArgument, "password is required")
 	}
-	return &ssov1.RegisterResponse{
-		UsedId: userID,
-	}, nil
+
+	uid, err := s.auth.RegisterNewUser(ctx, in.GetEmail(), in.GetPassword())
+	if err != nil {
+		if errors.Is(err, storage.ErrUserExists) {
+			return nil, status.Error(codes.AlreadyExists, "user already exists")
+		}
+
+		return nil, status.Error(codes.Internal, "failed to register user")
+	}
+
+	return &ssov1.RegisterResponse{UsedId: uid}, nil
 }
 
 func (s *serverAPI) IsAdmin(
 	ctx context.Context,
-	req *ssov1.IsAdminRequest,
+	in *ssov1.IsAdminRequest,
 ) (*ssov1.IsAdminResponse, error) {
-	if err := validateIsAdmin(req); err != nil {
-		return nil, err
+	if in.UserId == 0 {
+		return nil, status.Error(codes.InvalidArgument, "user_id is required")
 	}
 
-	isAdmin, err := s.auth.IsAdmin(ctx, req.GetUserId())
+	isAdmin, err := s.auth.IsAdmin(ctx, in.GetUserId())
 	if err != nil {
-		return nil, status.Error(codes.Internal, "internal server error")
+		if errors.Is(err, storage.ErrUserNotFound) {
+			return nil, status.Error(codes.NotFound, "user not found")
+		}
+
+		return nil, status.Error(codes.Internal, "failed to check admin status")
 	}
 
-	return &ssov1.IsAdminResponse{
-		IsAdmin: isAdmin,
-	}, nil
-}
-
-func validateLogin(req *ssov1.LoginRequest) error {
-	if req.GetEmail() == "" {
-		return status.Error(codes.InvalidArgument, "Email cannot be empty")
-	}
-	if req.GetPassword() == "" {
-		return status.Error(codes.InvalidArgument, "Password cannot be empty")
-	}
-	if req.GetAppId() == "" {
-		return status.Error(codes.InvalidArgument, "APPID is required")
-	}
-
-	return nil
-}
-
-func validateRegister(req *ssov1.RegisterRequest) error {
-	if req.GetEmail() == "" {
-		return status.Error(codes.InvalidArgument, "Email cannot be empty")
-	}
-	if req.GetPassword() == "" {
-		return status.Error(codes.InvalidArgument, "Password cannot be empty")
-	}
-
-	return nil
-}
-
-func validateIsAdmin(req *ssov1.IsAdminRequest) error {
-	if req.GetUserId() == emptyValue { // Изменение условия на сравнение с int64
-		return status.Error(codes.InvalidArgument, "User ID is required")
-	}
-
-	return nil
+	return &ssov1.IsAdminResponse{IsAdmin: isAdmin}, nil
 }

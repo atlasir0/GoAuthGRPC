@@ -3,10 +3,11 @@ module GoAuthGRPC
 go 1.21.1
 
 require (
-	github.com/atlasir0/proto v0.0.0-20240622141525-ae4040b3a739
+	github.com/atlasir0/proto v0.0.0-20240624185911-9c8b6b633653
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/golang-migrate/migrate/v4 v4.17.1
 	github.com/ilyakaznacheev/cleanenv v1.5.0
+	github.com/lib/pq v1.10.9
 	golang.org/x/crypto v0.24.0
 	google.golang.org/grpc v1.64.0
 )
@@ -16,7 +17,6 @@ require (
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
-	github.com/mattn/go-sqlite3 v1.14.22 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect

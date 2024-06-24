@@ -1,43 +1,44 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"github.com/golang-migrate/migrate/v4"
-	_ "github.com/golang-migrate/migrate/v4/database/sqlite3"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	_ "github.com/mattn/go-sqlite3" // Добавьте этот импорт
+	_ "github.com/lib/pq"
+	"log"
 )
 
 func main() {
-	var storagePath, migrationsPath, migrationTable string
+	var migrationsPath, migrationTable string
 
-	// Устанавливаем значение по умолчанию для storagePath
-	storagePath = "./storage/sso.db"
-
-	flag.StringVar(&migrationsPath, "migrations-path", "", "path migrations ")
+	flag.StringVar(&migrationsPath, "migrations-path", "", "path to migrations")
 	flag.StringVar(&migrationTable, "migration-table", "migrations", "name of migration table")
 	flag.Parse()
 
 	if migrationsPath == "" {
-		panic("migrations path is required")
+		log.Fatal("migrations path is required")
 	}
+
+	dbURL := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable&x-migrate-table=%s",
+		"postgres", "123", "localhost", 5432, "todo_list", migrationTable)
 
 	m, err := migrate.New(
 		"file://"+migrationsPath,
-		fmt.Sprintf("sqlite://%s/?x-migrate-table=%s", storagePath, migrationTable),
+		dbURL,
 	)
 	if err != nil {
-		panic(err)
+		log.Fatalf("Failed to initialize migrate: %v", err)
 	}
 
-	if err = m.Up(); err != nil {
-		if errors.Is(err, migrate.ErrNoChange) {
+	err = m.Up()
+	if err != nil {
+		if err == migrate.ErrNoChange {
 			fmt.Println("No migrations to apply")
 		} else {
-			panic(err)
+			log.Fatalf("Failed to apply migrations: %v", err)
 		}
 	}
-	fmt.Println("Migrations applied")
+	fmt.Println("Migrations applied successfully")
 }

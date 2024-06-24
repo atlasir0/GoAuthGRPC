@@ -3,6 +3,8 @@
 package app
 
 import (
+	"GoAuthGRPC/internal/services/auth"
+	"GoAuthGRPC/internal/storage/postgres"
 	"log/slog"
 	"time"
 
@@ -19,8 +21,14 @@ func New(
 	storagePath string,
 	tokenTTL time.Duration,
 ) *App {
+	storage, err := postgres.New(storagePath)
+	if err != nil {
+		panic(err)
+	}
 
-	grpcApp := grpcapp.New(log, grpcPort)
+	authService := auth.New(log, storage, storage, storage, tokenTTL)
+
+	grpcApp := grpcapp.New(log, authService, grpcPort)
 
 	return &App{
 		GRPCServer: grpcApp,

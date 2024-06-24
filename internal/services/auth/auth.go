@@ -168,3 +168,5 @@ func (a *Auth) IsAdmin(ctx context.Context, userID int64) (bool, error) {
 
 	return isAdmin, nil
 }
+
+
