@@ -3,7 +3,7 @@ module GoAuthGRPC
 go 1.21.1
 
 require (
-	github.com/atlasir0/proto v0.0.0-20240624185911-9c8b6b633653
+	// github.com/atlasir0/proto v0.0.0-20240624185911-9c8b6b633653
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/golang-migrate/migrate/v4 v4.17.1
 	github.com/ilyakaznacheev/cleanenv v1.5.0
@@ -11,6 +11,8 @@ require (
 	golang.org/x/crypto v0.24.0
 	google.golang.org/grpc v1.64.0
 )
+
+require github.com/atlasir0/proto v0.0.0-20240625105754-c7105010c9d8
 
 require (
 	github.com/BurntSushi/toml v1.4.0 // indirect

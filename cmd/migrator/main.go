@@ -3,11 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
+
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq"
-	"log"
 )
 
 func main() {
@@ -21,9 +22,7 @@ func main() {
 		log.Fatal("migrations path is required")
 	}
 
-	dbURL := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable&x-migrate-table=%s",
-		"postgres", "123", "localhost", 5432, "todo_list", migrationTable)
-
+	dbURL := "postgres://postgres:123@localhost:5432/todo_list?sslmode=disable&x-migrate-table=migrations"
 	m, err := migrate.New(
 		"file://"+migrationsPath,
 		dbURL,

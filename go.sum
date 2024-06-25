@@ -5,10 +5,10 @@ github.com/BurntSushi/toml v1.4.0 h1:kuoIxZQy2WRRk1pttg9asf+WVv6tWQuBNVmK8+nqPr0
 github.com/BurntSushi/toml v1.4.0/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
 github.com/Microsoft/go-winio v0.6.1 h1:9/kr64B9VUZrLm5YYwbGtUJnMgqWVOdUAXu6Migciow=
 github.com/Microsoft/go-winio v0.6.1/go.mod h1:LRdKpFKfdobln8UmuiYcKPot9D2v6svN5+sAH+4kjUM=
-github.com/atlasir0/proto v0.0.0-20240622141525-ae4040b3a739 h1:mAYI4t4q5AZN8gnqEjcOXfjbQXeV4KAMoKzzSFA9qGI=
-github.com/atlasir0/proto v0.0.0-20240622141525-ae4040b3a739/go.mod h1:KMQ5pxfWsKz4T0hAt0lSXZpY4WysWfSUEi3yJVaGvdE=
 github.com/atlasir0/proto v0.0.0-20240624185911-9c8b6b633653 h1:ANtk15syIRqjPbzUWZ1EGDYcjqzB1F+bYfgzqUwC6S4=
 github.com/atlasir0/proto v0.0.0-20240624185911-9c8b6b633653/go.mod h1:KMQ5pxfWsKz4T0hAt0lSXZpY4WysWfSUEi3yJVaGvdE=
+github.com/atlasir0/proto v0.0.0-20240625105754-c7105010c9d8 h1:xTBi7YPO5nBiKJPIN7lb70LWrVwX3CeLjnTJyiWB5Pg=
+github.com/atlasir0/proto v0.0.0-20240625105754-c7105010c9d8/go.mod h1:KMQ5pxfWsKz4T0hAt0lSXZpY4WysWfSUEi3yJVaGvdE=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

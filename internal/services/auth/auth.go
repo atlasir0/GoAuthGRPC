@@ -31,7 +31,7 @@ type UserSaver interface {
 	SaveUser(
 		ctx context.Context,
 		email string,
-		passHash string,
+		passHash []byte,
 	) (uid int64, err error)
 }
 
@@ -128,7 +128,7 @@ func (a *Auth) RegisterNewUser(ctx context.Context, email string, pass string) (
 		return 0, fmt.Errorf("%s: %w", op, err)
 	}
 
-	id, err := a.usrSaver.SaveUser(ctx, email, string(passHash))
+	id, err := a.usrSaver.SaveUser(ctx, email, passHash)
 
 	if err != nil {
 		if errors.Is(err, storage.ErrUserExists) {
@@ -168,5 +168,3 @@ func (a *Auth) IsAdmin(ctx context.Context, userID int64) (bool, error) {
 
 	return isAdmin, nil
 }
-
-

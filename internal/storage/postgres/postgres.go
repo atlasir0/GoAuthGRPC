@@ -5,12 +5,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+
 	"github.com/lib/pq"
 
 	"GoAuthGRPC/internal/domain/models"
 	"GoAuthGRPC/internal/storage"
-
-	_ "github.com/lib/pq"
 )
 
 type Storage struct {
@@ -33,9 +32,11 @@ func (s *Storage) Stop() error {
 }
 
 // SaveUser saves user to db.
+// SaveUser saves user to db.
 func (s *Storage) SaveUser(ctx context.Context, email string, passHash []byte) (int64, error) {
 	const op = "storage.postgres.SaveUser"
 
+	// Используем $1, $2 для параметров в запросе PostgreSQL
 	stmt, err := s.db.PrepareContext(ctx, "INSERT INTO users(email, pass_hash) VALUES($1, $2) RETURNING id")
 	if err != nil {
 		return 0, fmt.Errorf("%s: %w", op, err)
@@ -80,7 +81,7 @@ func (s *Storage) User(ctx context.Context, email string) (models.User, error) {
 }
 
 // App returns app by id.
-func (s *Storage) App(ctx context.Context, id int) (models.App, error) {
+func (s *Storage) App(ctx context.Context, id int64) (models.App, error) {
 	const op = "storage.postgres.App"
 
 	stmt, err := s.db.PrepareContext(ctx, "SELECT id, name, secret FROM apps WHERE id = $1")
