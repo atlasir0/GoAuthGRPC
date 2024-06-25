@@ -96,6 +96,11 @@ func (a *Auth) Login(
 
 	app, err := a.appProvider.App(ctx, int64(appID))
 	if err != nil {
+		log.With(
+
+			slog.Int64("appID", int64(appID)),
+		).Error("failed to get app", slog.Any("error", err))
+		// TODO: Не работает, где то на этом месте все ломается
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
@@ -124,21 +129,17 @@ func (a *Auth) RegisterNewUser(ctx context.Context, email string, pass string) (
 	passHash, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
 	if err != nil {
 		log.Error("failed to generate password hash", slog.Any("error", err))
-
 		return 0, fmt.Errorf("%s: %w", op, err)
 	}
 
 	id, err := a.usrSaver.SaveUser(ctx, email, passHash)
-
 	if err != nil {
 		if errors.Is(err, storage.ErrUserExists) {
 			log.Warn("user already exists", slog.String("email", email))
-
 			return 0, fmt.Errorf("%s: %w", op, ErrUserExists)
 		}
 
 		log.Error("failed to save user", slog.Any("error", err))
-
 		return 0, fmt.Errorf("%s: %w", op, err)
 	}
 

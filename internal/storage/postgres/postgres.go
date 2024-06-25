@@ -36,7 +36,6 @@ func (s *Storage) Stop() error {
 func (s *Storage) SaveUser(ctx context.Context, email string, passHash []byte) (int64, error) {
 	const op = "storage.postgres.SaveUser"
 
-	// Используем $1, $2 для параметров в запросе PostgreSQL
 	stmt, err := s.db.PrepareContext(ctx, "INSERT INTO users(email, pass_hash) VALUES($1, $2) RETURNING id")
 	if err != nil {
 		return 0, fmt.Errorf("%s: %w", op, err)
@@ -59,7 +58,6 @@ func (s *Storage) SaveUser(ctx context.Context, email string, passHash []byte) (
 // User returns user by email.
 func (s *Storage) User(ctx context.Context, email string) (models.User, error) {
 	const op = "storage.postgres.User"
-
 	stmt, err := s.db.PrepareContext(ctx, "SELECT id, email, pass_hash FROM users WHERE email = $1")
 	if err != nil {
 		return models.User{}, fmt.Errorf("%s: %w", op, err)
