@@ -12,6 +12,7 @@ import (
 	"GoAuthGRPC/internal/storage"
 )
 
+// TODO: изменить postgres на mongodb
 type Storage struct {
 	db *sql.DB
 }
@@ -31,8 +32,6 @@ func (s *Storage) Stop() error {
 	return s.db.Close()
 }
 
-// SaveUser saves user to db.
-// SaveUser saves user to db.
 func (s *Storage) SaveUser(ctx context.Context, email string, passHash []byte) (int64, error) {
 	const op = "storage.postgres.SaveUser"
 
