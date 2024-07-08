@@ -4,7 +4,3 @@ run_db:
 run: 
 	go run cmd/sso/main.go --config=./config/local.yaml
 	
-	{
-    "email": "author",
-    "password": "123"
-}

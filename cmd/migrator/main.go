@@ -22,7 +22,7 @@ func main() {
 		log.Fatal("migrations path is required")
 	}
 
-	dbURL := "postgres://postgres:123@localhost:5432/todo_list?sslmode=disable&x-migrate-table=migrations"
+	dbURL := "postgres://postgres:123@localhost:5432/atlasiro?sslmode=disable&x-migrate-table=migrations"
 	m, err := migrate.New(
 		"file://"+migrationsPath,
 		dbURL,

@@ -67,7 +67,6 @@ func (a *Auth) Login(
 	appID int,
 ) (string, error) {
 	const op = "Auth.Login"
-
 	log := a.log.With(
 		slog.String("op", op),
 		slog.String("username", email),
@@ -146,7 +145,6 @@ func (a *Auth) RegisterNewUser(ctx context.Context, email string, pass string) (
 	return id, nil
 }
 
-// IsAdmin checks if user is admin.
 func (a *Auth) IsAdmin(ctx context.Context, userID int64) (bool, error) {
 	const op = "Auth.IsAdmin"
 

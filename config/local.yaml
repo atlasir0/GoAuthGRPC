@@ -1,5 +1,5 @@
 env: "local"
-storage_path: "postgres://postgres:123@localhost:5432/todo_list?sslmode=disable"
+storage_path: "postgres://postgres:123@localhost:5432/atlasiro?sslmode=disable"
 token_ttl: 1h
 grpc: 
   port: 404

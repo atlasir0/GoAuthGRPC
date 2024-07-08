@@ -2,8 +2,9 @@ package jwt
 
 import (
 	"GoAuthGRPC/internal/domain/models"
-	"github.com/golang-jwt/jwt/v5"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func NewToken(user models.User, app models.App, duration time.Duration) (string, error) {
