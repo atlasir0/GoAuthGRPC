@@ -26,7 +26,6 @@ func MustLoad() *Config {
 	if configPath == "" {
 		panic("config path is empty")
 	}
-
 	return MustLoadPath(configPath)
 }
 

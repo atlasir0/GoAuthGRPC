@@ -3,14 +3,14 @@ package grpcapp
 import (
 	authrpc "GoAuthGRPC/internal/grpc/auth"
 	"fmt"
+	"google.golang.org/grpc"
 	"log/slog"
 	"net"
-
-	"google.golang.org/grpc"
 )
 
 type App struct {
-	log         *slog.Logger
+	log *slog.Logger
+
 	gRPCServer  *grpc.Server
 	port        int
 	authService authrpc.Auth
